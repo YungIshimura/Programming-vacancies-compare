@@ -31,7 +31,7 @@ python main.py
 ```
 и получаете две таблицы с обработанными вакансиями программистов 
 
-![](https://user-images.githubusercontent.com/83189636/133936691-45f8e6a2-b21b-499a-9533-7715001e207c.PNG)
+![](https://user-images.githubusercontent.com/83189636/133937032-af8a7a52-1e72-45fc-8fa2-0755ffb5b6a4.PNG)
 
 Пример запуска скрипта
 
