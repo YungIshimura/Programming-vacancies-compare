@@ -14,7 +14,8 @@ def predict_rub_salary_for_hh(list_languages):
             "area": 1,
             "period": 30,
             "per_page": 50,
-            "page": 0
+            "page": 0,
+            "currency":"RUR"
         }
 
         hh_average_salary_list = []
