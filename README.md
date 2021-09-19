@@ -30,3 +30,9 @@ pip install -r requirements.txt
 python main.py
 ```
 и получаете две таблицы с обработанными вакансиями программистов 
+
+![](https://user-images.githubusercontent.com/83189636/133936691-45f8e6a2-b21b-499a-9533-7715001e207c.PNG)
+
+Пример запуска скрипта
+
+
