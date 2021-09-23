@@ -29,7 +29,7 @@ def predict_rub_salary_for_hh(programming_languages):
             hh_vacancies_page = hh_vacancies["pages"]
             for vacancies in range(len(hh_vacancies["items"])):
                 salary = hh_vacancies["items"][vacancies]["salary"]
-                if salary != None:
+                if salary:
                     average_salary = predict_salary(salary["to"], salary["from"])
                     hh_average_salary_scroll.append(average_salary)
             params["page"] += 1
