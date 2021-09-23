@@ -72,7 +72,7 @@ def predict_rub_salary_for_superjob(list_languages):
                 average_salary = predict_salary(salary["payment_from"], salary["payment_to"])
                 sj_average_salary_list.append(average_salary)
             params["page"] += 1
-        filtered_sj_average_salary_list = filter(lambda num: num != 0, sj_average_salary_list)
+        filtered_sj_average_salary_list = filter(lambda num: num , sj_average_salary_list)
         sj_average_salary_list = list(filtered_sj_average_salary_list)
         average_salaries = sum(sj_average_salary_list) / len(sj_average_salary_list)
         sj_table_data.append(
