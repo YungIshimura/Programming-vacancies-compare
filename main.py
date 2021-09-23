@@ -4,10 +4,7 @@ from dotenv import load_dotenv
 from terminaltables import DoubleTable
 
 
-def predict_rub_salary_for_hh(programming_languages):
-    hh_table_data = [
-        ["language", "vacancies_found", "vacancies_processed", "average_salary"]
-    ]
+def predict_rub_salary_for_hh(programming_languages,table_headers):
     for language in programming_languages:
         params = {
             "text": language,
@@ -34,17 +31,14 @@ def predict_rub_salary_for_hh(programming_languages):
                     hh_average_salary_scroll.append(average_salary)
             params["page"] += 1
         average_salaries = sum(hh_average_salary_scroll) / len(hh_average_salary_scroll)
-        hh_table_data.append(
+        table_headers.append(
             [language, hh_vacancies["found"], len(hh_average_salary_scroll), int(average_salaries)]
         )
 
-    return hh_table_data
+    return table_headers
 
 
-def predict_rub_salary_for_superjob(programming_languages):
-    sj_table_data = [
-        ["language", "vacancies_found", "vacancies_processed", "average_salary"]
-    ]
+def predict_rub_salary_for_superjob(programming_languages,table_headers,superjob_api_key):
     for language in programming_languages:
         headers = {"X-Api-App-Id": superjob_api_key}
         params = {
@@ -73,11 +67,11 @@ def predict_rub_salary_for_superjob(programming_languages):
         filtered_sj_average_salary_scroll = filter(lambda num: num , sj_average_salary_scroll)
         sj_average_salary_scroll = list(filtered_sj_average_salary_scroll)
         average_salaries = sum(sj_average_salary_scroll) / len(sj_average_salary_scroll)
-        sj_table_data.append(
+        table_headers.append(
             [language, sj_vacancies["total"], len(sj_average_salary_scroll), int(average_salaries)]
         )
 
-    return sj_table_data
+    return table_headers
 
 
 def predict_salary(salary_from, salary_to):
@@ -99,6 +93,9 @@ def print_table(table_data, title):
 
 
 if __name__ == "__main__":
+    table_headers = [
+        ["language", "vacancies_found", "vacancies_processed", "average_salary"]
+    ]
     load_dotenv()
     superjob_api_key = os.getenv("SUPERJOB_API_KEY")
     programming_languages = [
@@ -110,8 +107,8 @@ if __name__ == "__main__":
      "C#",
      "PHP",
      "Go"]
-    hh_table_data = predict_rub_salary_for_hh(programming_languages)
-    sj_table_data = predict_rub_salary_for_superjob(programming_languages)
+    hh_table_data = predict_rub_salary_for_hh(programming_languages,table_headers)
+    sj_table_data = predict_rub_salary_for_superjob(programming_languages,table_headers,superjob_api_key)
     print_table(hh_table_data,"HH.ru Moscow")
     print_table(sj_table_data,"SuperJob.ru Moscow")
     
