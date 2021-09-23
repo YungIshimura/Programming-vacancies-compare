@@ -83,8 +83,12 @@ def predict_rub_salary_for_superjob(list_languages):
 
 
 def predict_salary(salary_from, salary_to):
-    if salary_from or salary_to:
-        return salary_from * 1.2 or salary_to * 0.8
+    if salary_from:
+        return salary_from*1.2
+    elif salary_to:
+        return salary_to*0.8
+    elif salary_from or salary_to:
+        pass
     else:
         return (salary_to+salary_from)/2
 
