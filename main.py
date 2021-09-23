@@ -91,15 +91,11 @@ def predict_salary(salary_from, salary_to):
         return (salary_to+salary_from)/2
 
 
-def print_table(hh_table_data, sj_table_data):
-    title = "HH.ru Moscow"
-    hh_table_instance = DoubleTable(hh_table_data, title)
-    hh_table_instance.justify_columns[2] = "right"
-    print(hh_table_instance.table)
-    title = "SuperJob.ri Moscow"
-    sj_table_instance = DoubleTable(sj_table_data, title)
-    sj_table_instance.justify_columns[2] = "right"
-    print(sj_table_instance.table)
+def print_table(table_data, title):
+    table_instance = DoubleTable(table_data, title)
+    table_instance.justify_columns[2] = "right"
+    print(table_instance.table)
+    
 
 
 if __name__ == "__main__":
@@ -108,4 +104,6 @@ if __name__ == "__main__":
     list_languages = ["Python", "Java", "C", "C++", "JavaScript", "C#", "PHP", "Go"]
     hh_table_data = predict_rub_salary_for_hh(list_languages)
     sj_table_data = predict_rub_salary_for_superjob(list_languages)
-    print_table(hh_table_data, sj_table_data)
+    print_table(hh_table_data,"HH.ru Moscow")
+    print_table(sj_table_data,"SuperJob.ru Moscow")
+    
