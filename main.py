@@ -15,7 +15,7 @@ def predict_rub_salary_for_hh(programming_languages):
             "period": 30,
             "per_page": 50,
             "page": 0,
-            "currency":"RUR"
+            "currency": "RUR"
         }
 
         hh_average_salary_scroll = []
@@ -35,7 +35,7 @@ def predict_rub_salary_for_hh(programming_languages):
             params["page"] += 1
         average_salaries = sum(hh_average_salary_scroll) / len(hh_average_salary_scroll)
         hh_table_data.append(
-            [language,hh_vacancies["found"],len(hh_average_salary_scroll),int(average_salaries)]
+            [language, hh_vacancies["found"], len(hh_average_salary_scroll), int(average_salaries)]
         )
 
     return hh_table_data
@@ -74,7 +74,7 @@ def predict_rub_salary_for_superjob(programming_languages):
         sj_average_salary_scroll = list(filtered_sj_average_salary_scroll)
         average_salaries = sum(sj_average_salary_scroll) / len(sj_average_salary_scroll)
         sj_table_data.append(
-            [language,sj_vacancies["total"],len(sj_average_salary_scroll),int(average_salaries)]
+            [language, sj_vacancies["total"], len(sj_average_salary_scroll), int(average_salaries)]
         )
 
     return sj_table_data
@@ -88,7 +88,7 @@ def predict_salary(salary_from, salary_to):
     elif salary_from or salary_to:
         pass
     else:
-        return (salary_to+salary_from)/2
+        return (salary_to + salary_from) / 2
 
 
 def print_table(table_data, title):
@@ -101,7 +101,15 @@ def print_table(table_data, title):
 if __name__ == "__main__":
     load_dotenv()
     superjob_api_key = os.getenv("SUPERJOB_API_KEY")
-    programming_languages = ["Python", "Java", "C", "C++", "JavaScript", "C#", "PHP", "Go"]
+    programming_languages = [
+     "Python",
+     "Java",
+     "C", 
+     "C++", 
+     "JavaScript",
+     "C#",
+     "PHP",
+     "Go"]
     hh_table_data = predict_rub_salary_for_hh(programming_languages)
     sj_table_data = predict_rub_salary_for_superjob(programming_languages)
     print_table(hh_table_data,"HH.ru Moscow")
