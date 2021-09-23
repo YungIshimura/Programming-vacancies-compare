@@ -20,14 +20,13 @@ def predict_rub_salary_for_hh(programming_languages):
 
         hh_average_salary_scroll = []
 
-        response = requests.get("https://api.hh.ru/vacancies", params=params)
-        response.raise_for_status()
-        hh_vacancies = response.json()
+        hh_vacancies_page = 40
 
-        while params["page"] < hh_vacancies["pages"]:
+        while params["page"] < hh_vacancies_page:
             response = requests.get("https://api.hh.ru/vacancies", params=params)
             response.raise_for_status()
             hh_vacancies = response.json()
+            hh_vacancies_page = hh_vacancies["pages"]
             for vacancies in range(len(hh_vacancies["items"])):
                 salary = hh_vacancies["items"][vacancies]["salary"]
                 if salary != None:
@@ -59,14 +58,13 @@ def predict_rub_salary_for_superjob(programming_languages):
 
         sj_average_salary_scroll = []
 
-        response = requests.get("https://api.superjob.ru/2.0/vacancies/", headers=headers, params=params)
-        response.raise_for_status()
-        sj_vacancies = response.json()
+        sj_more_pages = True
 
-        while sj_vacancies["more"]:
+        while sj_more_pages:
             response = requests.get("https://api.superjob.ru/2.0/vacancies/", headers=headers, params=params)
             response.raise_for_status()
             sj_vacancies = response.json()
+            sj_more_pages = sj_vacancies["more"]
             for vacancies in range(len(sj_vacancies["objects"])):
                 salary = sj_vacancies["objects"][vacancies]
                 average_salary = predict_salary(salary["payment_from"], salary["payment_to"])
