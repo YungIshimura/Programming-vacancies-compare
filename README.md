@@ -6,7 +6,7 @@
 
 Нам необходимы два API-ключа. [API hh.ru](https://github.com/hhru/api) публичный, потому можно сразу перейти к его документации и сразу брать всё необходимое.
 
-[API SuperJob.ru](https://www.superjob.ru/auth/login/?returnUrl=https://api.superjob.ru/register/) уже приватный, потому нужно перейти на сайт api.superjob.ru и зарегистрировать своё приложение (его не проверяют).
+API SuperJob.ru уже приватный, [потому нужно перейти на сайт api.superjob.ru и зарегистрировать](https://www.superjob.ru/auth/login/?returnUrl=https://api.superjob.ru/register/) своё приложение (его не проверяют).
 Сохранять чувствительные данные публично плохая идея, потому стоит его спрятать в ```.env``` файл:
 ```python
 SUPERJOB_API_KEY="Ваш API-ключ"
