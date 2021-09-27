@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from terminaltables import DoubleTable
 
 
-def predict_rub_salary_for_hh(programming_languages,table_headers,hh_vacancies_page):
+def predict_rub_salary_for_hh(programming_languages,table_headers,hh_vacancies_page,hh_average_salary_scroll):
     for language in programming_languages:
         params = {
             "text": language,
@@ -14,8 +14,6 @@ def predict_rub_salary_for_hh(programming_languages,table_headers,hh_vacancies_p
             "page": 0,
             "currency": "RUR"
         }
-
-        hh_average_salary_scroll = []
 
         while params["page"] < hh_vacancies_page:
             response = requests.get("https://api.hh.ru/vacancies", params=params)
@@ -36,7 +34,7 @@ def predict_rub_salary_for_hh(programming_languages,table_headers,hh_vacancies_p
     return table_headers
 
 
-def predict_rub_salary_for_superjob(programming_languages,table_headers,superjob_api_key,sj_more_pages):
+def predict_rub_salary_for_superjob(programming_languages,table_headers,superjob_api_key,sj_more_pages,sj_average_salary_scroll):
     for language in programming_languages:
         headers = {"X-Api-App-Id": superjob_api_key}
         params = {
@@ -91,6 +89,8 @@ def print_table(table_data, title):
 if __name__ == "__main__":
     load_dotenv()
     superjob_api_key = os.getenv("SUPERJOB_API_KEY")
+    hh_average_salary_scroll = []
+    sj_average_salary_scroll = []
     sj_more_pages = True
     hh_vacancies_page = 40
     hh_id_moscow = "1"
@@ -108,8 +108,8 @@ if __name__ == "__main__":
      "C#",
      "PHP",
      "Go"]
-    hh_table_data = predict_rub_salary_for_hh(programming_languages,table_headers,hh_vacancies_page)
-    sj_table_data = predict_rub_salary_for_superjob(programming_languages,table_headers,superjob_api_key,sj_more_pages)
+    hh_table_data = predict_rub_salary_for_hh(programming_languages,table_headers,hh_vacancies_page,hh_average_salary_scroll)
+    sj_table_data = predict_rub_salary_for_superjob(programming_languages,table_headers,superjob_api_key,sj_more_pages,sj_average_salary_scroll)
     print_table(hh_table_data,"HH.ru Moscow")
     print_table(sj_table_data,"SuperJob.ru Moscow")
     
