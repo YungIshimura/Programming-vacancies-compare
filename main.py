@@ -32,7 +32,10 @@ def predict_rub_salary_for_hh(programming_languages,average_salary_scroll):
                     average_salary_scroll.append(average_salary)
             params["page"] += 1
 
-        average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
+        try:
+            average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
+        except ZeroDivisionError:
+            continue
         print_table(language, hh_vacancies["found"], len(average_salary_scroll), int(average_salaries),hh_table_data,title = "hh.ru Moscow")
 
 
@@ -66,7 +69,11 @@ def predict_rub_salary_for_superjob(programming_languages,superjob_api_key,avera
 
         filtered_average_salary_scroll = filter(bool, average_salary_scroll)
         average_salary_scroll = list(filtered_average_salary_scroll)
-        average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
+        
+        try:
+            average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
+        except ZeroDivisionError:
+            continue
         print_table(language, sj_vacancies["total"], len(average_salary_scroll), int(average_salaries),sj_table_data,title="SuperJob.ru Moscow")
 
 
