@@ -24,12 +24,14 @@ def predict_rub_salary_for_hh(programming_languages,average_salary_scroll):
             response.raise_for_status()
             hh_vacancies = response.json()
             hh_vacancies_page = hh_vacancies["pages"]
+
             for vacancies in range(len(hh_vacancies["items"])):
                 salary = hh_vacancies["items"][vacancies]["salary"]
                 if salary:
                     average_salary = predict_salary(salary["to"], salary["from"])
                     average_salary_scroll.append(average_salary)
             params["page"] += 1
+
         average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
         print_table(language, hh_vacancies["found"], len(average_salary_scroll), int(average_salaries),hh_table_data,title = "hh.ru Moscow")
 
@@ -55,15 +57,18 @@ def predict_rub_salary_for_superjob(programming_languages,superjob_api_key,avera
             response.raise_for_status()
             sj_vacancies = response.json()
             sj_more_pages = sj_vacancies["more"]
+
             for vacancies in range(len(sj_vacancies["objects"])):
                 salary = sj_vacancies["objects"][vacancies]
                 average_salary = predict_salary(salary["payment_from"], salary["payment_to"])
                 average_salary_scroll.append(average_salary)
             params["page"] += 1
+
         filtered_average_salary_scroll = filter(lambda num: num , average_salary_scroll)
         average_salary_scroll = list(filtered_average_salary_scroll)
         average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
         print_table(language, sj_vacancies["total"], len(average_salary_scroll), int(average_salaries),sj_table_data,title="SuperJob.ru Moscow")
+
 
 def predict_salary(salary_from, salary_to):
     if salary_from:
@@ -80,6 +85,7 @@ def print_table(language,total_vacancies,average_salary_scroll,average_salaries,
     table_data.append(
             [language, total_vacancies, average_salary_scroll, average_salaries]
         )
+        
     if len(table_data)==9:
         table_instance = DoubleTable(table_data, title)
         table_instance.justify_columns[2] = "right"
