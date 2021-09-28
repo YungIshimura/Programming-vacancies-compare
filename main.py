@@ -64,7 +64,7 @@ def predict_rub_salary_for_superjob(programming_languages,superjob_api_key,avera
                 average_salary_scroll.append(average_salary)
             params["page"] += 1
 
-        filtered_average_salary_scroll = filter(lambda num: num , average_salary_scroll)
+        filtered_average_salary_scroll = filter(bool, average_salary_scroll)
         average_salary_scroll = list(filtered_average_salary_scroll)
         average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
         print_table(language, sj_vacancies["total"], len(average_salary_scroll), int(average_salaries),sj_table_data,title="SuperJob.ru Moscow")
@@ -85,7 +85,7 @@ def print_table(language,total_vacancies,average_salary_scroll,average_salaries,
     table_data.append(
             [language, total_vacancies, average_salary_scroll, average_salaries]
         )
-        
+
     if len(table_data)==9:
         table_instance = DoubleTable(table_data, title)
         table_instance.justify_columns[2] = "right"
