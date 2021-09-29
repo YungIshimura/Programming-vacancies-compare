@@ -4,23 +4,22 @@ from dotenv import load_dotenv
 from terminaltables import DoubleTable
 
 
-def predict_rub_salary_for_hh(programming_languages,average_salary_scroll):
-    for language in programming_languages:
-        params = {
-            "text": language,
+def predict_rub_salary_for_hh(programming_languages, average_salary_scroll):
+    params = {
             "area": hh_id_moscow,
             "period": 30,
             "per_page": 50,
-            "page": 0,
             "currency": "RUR"
         }
-
-        average_salary_scroll = []
-
+    table_data = []
+    for language in programming_languages:
+        params["text"] = language
+        params['page'] = 0
         hh_vacancies_page = 40
+        average_salary_scroll.clear()
 
         while params["page"] < hh_vacancies_page:
-            response = requests.get("https://api.hh.ru/vacancies", params=params)
+            response = requests.get("https://api.hh.ru/vacancies", params = params)
             response.raise_for_status()
             hh_vacancies = response.json()
             hh_vacancies_page = hh_vacancies["pages"]
@@ -31,28 +30,28 @@ def predict_rub_salary_for_hh(programming_languages,average_salary_scroll):
                     average_salary = predict_salary(salary["to"], salary["from"])
                     average_salary_scroll.append(average_salary)
             params["page"] += 1
-
         try:
             average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
+            table_data.append([language, hh_vacancies["found"], len(average_salary_scroll), int(average_salaries)])
         except ZeroDivisionError:
             continue
-        print_table(language, hh_vacancies["found"], len(average_salary_scroll), int(average_salaries),hh_table_data,title = "hh.ru Moscow")
-
+            
+    return table_data
 
 def predict_rub_salary_for_superjob(programming_languages,superjob_api_key,average_salary_scroll):
-    for language in programming_languages:
-        headers = {"X-Api-App-Id": superjob_api_key}
-        params = {
-            "keyword": language,
+    table_data = []
+    headers = {"X-Api-App-Id": superjob_api_key}
+    params = {
             "t": sj_id_moscow,
             "catalogues": sj_profession_catalog_number,
             "period": 30,
             "page": 0,
             "count": 5,
         }
-
-        average_salary_scroll = []
-
+    for language in programming_languages:
+        params['keyword'] = language
+        params['page'] = 0
+        average_salary_scroll.clear()
         sj_more_pages = True
 
         while sj_more_pages:
@@ -72,9 +71,10 @@ def predict_rub_salary_for_superjob(programming_languages,superjob_api_key,avera
         
         try:
             average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
+            table_data.append([language, sj_vacancies["total"], len(average_salary_scroll), int(average_salaries)])
         except ZeroDivisionError:
             continue
-        print_table(language, sj_vacancies["total"], len(average_salary_scroll), int(average_salaries),sj_table_data,title="SuperJob.ru Moscow")
+    return table_data
 
 
 def predict_salary(salary_from, salary_to):
@@ -88,16 +88,17 @@ def predict_salary(salary_from, salary_to):
         return (salary_to + salary_from) / 2
 
 
-def print_table(language,total_vacancies,average_salary_scroll,average_salaries,table_data, title):
-    table_data.append(
-            [language, total_vacancies, average_salary_scroll, average_salaries]
-        )
-
-    if len(table_data)==9:
-        table_instance = DoubleTable(table_data, title)
-        table_instance.justify_columns[2] = "right"
-        print(table_instance.table)
-            
+def print_table(table_data, title):
+    table_headers = [
+        ["language", "vacancies_found", "vacancies_processed", "average_salary"]
+    ]
+    table = table_headers[:]
+    for vacancies in table_data:
+        table.append(vacancies)
+    table_instance = DoubleTable(table, title)
+    table_instance.justify_columns[2] = "right"
+    print(table_instance.table)
+        
 
 
 if __name__ == "__main__":
@@ -107,11 +108,6 @@ if __name__ == "__main__":
     hh_id_moscow = "1"
     sj_id_moscow = "4"
     sj_profession_catalog_number = "48"
-    table_headers = [
-        ["language", "vacancies_found", "vacancies_processed", "average_salary"]
-    ]
-    hh_table_data = table_headers[:]
-    sj_table_data = table_headers[:]
     programming_languages = [
      "Python",
      "Java",
@@ -122,5 +118,6 @@ if __name__ == "__main__":
      "PHP",
      "Go"]
     hh_table_data = predict_rub_salary_for_hh(programming_languages,average_salary_scroll)
-    sj_table_data = predict_rub_salary_for_superjob(programming_languages,superjob_api_key,average_salary_scroll)
-    
+    sj_table_data = predict_rub_salary_for_superjob(programming_languages, superjob_api_key,average_salary_scroll)
+    print_table(hh_table_data, title = "hh.ru Moscow")
+    print_table(sj_table_data, title = 'SuperJob.ru Moscow')
