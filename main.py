@@ -99,14 +99,14 @@ def predict_rub_salary_for_superjob(programming_languages, superjob_api_key):
 
 
 def predict_salary(salary_from, salary_to):
-    if salary_from:
+    if salary_from and not salary_to:
         return salary_from * 1.2
-    elif salary_to:
+    elif salary_to and not salary_from:
         return salary_to * 0.8
-    elif not salary_from and not salary_to:
-        pass
+    elif salary_from and salary_to:
+        return (salary_to + salary_from) / 2
     else:
-        (salary_to + salary_from) / 2
+        pass
 
 
 def print_table(table_data, title):
