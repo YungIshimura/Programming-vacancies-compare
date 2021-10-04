@@ -16,14 +16,14 @@ def predict_rub_salary_for_hh(programming_languages):
     for language in programming_languages:
         params["text"] = language
         params["page"] = 0
-        hh_vacancies_page = 40
+        hh_vacancies_number_pages = 40
         average_salary_scroll = []
 
-        while params["page"] < hh_vacancies_page:
+        while params["page"] < hh_vacancies_number_pages:
             response = requests.get("https://api.hh.ru/vacancies", params=params)
             response.raise_for_status()
             hh_vacancies = response.json()
-            hh_vacancies_page = hh_vacancies["pages"]
+            hh_vacancies_number_pages = hh_vacancies["pages"]
 
             for vacancies in range(len(hh_vacancies["items"])):
                 salary = hh_vacancies["items"][vacancies]["salary"]
