@@ -110,13 +110,12 @@ def predict_salary(salary_from, salary_to):
 
 
 def print_table(table_data, title):
-    table_headers = [
+    table_rows = [
         ["language", "vacancies_found", "vacancies_processed", "average_salary"]
     ]
-    table = table_headers[:]
     for vacancies in table_data:
-        table.append(vacancies)
-    table_instance = DoubleTable(table, title)
+        table_rows.append(vacancies)
+    table_instance = DoubleTable(table_rows, title)
     table_instance.justify_columns[2] = "right"
     print(table_instance.table)
 
