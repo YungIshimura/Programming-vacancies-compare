@@ -5,13 +5,18 @@ from terminaltables import DoubleTable
 
 
 def predict_rub_salary_for_hh(programming_languages, average_salary_scroll):
-    params = {"area": hh_id_moscow, "period": 30, "per_page": 50, "currency": "RUR"}
-    table_data = []
+    params = {
+    "area": hh_id_moscow,
+    "period": 30,
+    "per_page": 50, 
+    "currency": "RUR"
+    }      
+
     for language in programming_languages:
         params["text"] = language
         params["page"] = 0
         hh_vacancies_page = 40
-        average_salary_scroll.clear()
+        table_data = []
 
         while params["page"] < hh_vacancies_page:
             response = requests.get("https://api.hh.ru/vacancies", params=params)
@@ -42,7 +47,6 @@ def predict_rub_salary_for_hh(programming_languages, average_salary_scroll):
 
 
 def predict_rub_salary_for_superjob(programming_languages, superjob_api_key, average_salary_scroll):
-    table_data = []
     headers = {"X-Api-App-Id": superjob_api_key}
     params = {
         "t": sj_id_moscow,
@@ -51,10 +55,11 @@ def predict_rub_salary_for_superjob(programming_languages, superjob_api_key, ave
         "page": 0,
         "count": 5,
     }
+    
     for language in programming_languages:
         params["keyword"] = language
         params["page"] = 0
-        average_salary_scroll.clear()
+        table_data = []
         sj_more_pages = True
 
         while sj_more_pages:
