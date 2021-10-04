@@ -4,19 +4,20 @@ from dotenv import load_dotenv
 from terminaltables import DoubleTable
 
 
-def predict_rub_salary_for_hh(programming_languages, average_salary_scroll):
+def predict_rub_salary_for_hh(programming_languages):
     params = {
     "area": hh_id_moscow,
     "period": 30,
     "per_page": 50, 
     "currency": "RUR"
     }      
+    table_data = []
 
     for language in programming_languages:
         params["text"] = language
         params["page"] = 0
         hh_vacancies_page = 40
-        table_data = []
+        average_salary_scroll = []
 
         while params["page"] < hh_vacancies_page:
             response = requests.get("https://api.hh.ru/vacancies", params=params)
@@ -46,7 +47,7 @@ def predict_rub_salary_for_hh(programming_languages, average_salary_scroll):
     return table_data
 
 
-def predict_rub_salary_for_superjob(programming_languages, superjob_api_key, average_salary_scroll):
+def predict_rub_salary_for_superjob(programming_languages, superjob_api_key):
     headers = {"X-Api-App-Id": superjob_api_key}
     params = {
         "t": sj_id_moscow,
@@ -55,12 +56,13 @@ def predict_rub_salary_for_superjob(programming_languages, superjob_api_key, ave
         "page": 0,
         "count": 5,
     }
-    
+    table_data = [] 
+
     for language in programming_languages:
         params["keyword"] = language
         params["page"] = 0
-        table_data = []
         sj_more_pages = True
+        average_salary_scroll = []
 
         while sj_more_pages:
             response = requests.get(
@@ -122,7 +124,6 @@ def print_table(table_data, title):
 if __name__ == "__main__":
     load_dotenv()
     superjob_api_key = os.getenv("SUPERJOB_API_KEY")
-    average_salary_scroll = []
     hh_id_moscow = "1"
     sj_id_moscow = "4"
     sj_profession_catalog_number = "48"
@@ -130,17 +131,17 @@ if __name__ == "__main__":
         "Python",
         "Java",
         "C",
-        "C  ",
+        "C++",
         "JavaScript",
         "C#",
         "PHP",
         "Go",
     ]
     hh_table_data = predict_rub_salary_for_hh(
-        programming_languages, average_salary_scroll
+        programming_languages
     )
     sj_table_data = predict_rub_salary_for_superjob(
-        programming_languages, superjob_api_key, average_salary_scroll
+        programming_languages, superjob_api_key
     )
     print_table(hh_table_data, title="hh.ru Moscow")
     print_table(sj_table_data, title="SuperJob.ru Moscow")
