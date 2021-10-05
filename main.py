@@ -25,10 +25,9 @@ def predict_rub_salary_for_hh(programming_languages):
             hh_vacancies = response.json()
             hh_vacancies_number_pages = hh_vacancies["pages"]
 
-            for vacancies in range(len(hh_vacancies["items"])):
-                salary = hh_vacancies["items"][vacancies]["salary"]
-                if salary:
-                    average_salary = predict_salary(salary["to"], salary["from"])
+            for vacancies,salary in enumerate(hh_vacancies["items"]):
+                if salary['salary']:
+                    average_salary = predict_salary(salary['salary']["to"], salary['salary']["from"])
                     average_salary_scroll.append(average_salary)
             params["page"] += 1
         try:
@@ -72,8 +71,7 @@ def predict_rub_salary_for_superjob(programming_languages, superjob_api_key):
             sj_vacancies = response.json()
             sj_more_pages = sj_vacancies["more"]
 
-            for vacancies in range(len(sj_vacancies["objects"])):
-                salary = sj_vacancies["objects"][vacancies]
+            for vacancies,salary in enumerate(sj_vacancies["objects"]):
                 average_salary = predict_salary(
                     salary["payment_from"], salary["payment_to"]
                 )
