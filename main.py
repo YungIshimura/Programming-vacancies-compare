@@ -98,7 +98,7 @@ def predict_salary(salary_from, salary_to):
         pass
 
 
-def print_table(table_data, title):
+def get_table(table_data, title):
     table_rows = [
         ["language", "vacancies_found", "vacancies_processed", "average_salary"]
     ]
@@ -106,7 +106,9 @@ def print_table(table_data, title):
         table_rows.append(vacancies)
     table_instance = DoubleTable(table_rows, title)
     table_instance.justify_columns[2] = "right"
-    print(table_instance.table)
+
+    return table_instance.table
+
 
 
 if __name__ == "__main__":
@@ -131,5 +133,7 @@ if __name__ == "__main__":
     sj_table_line = predict_rub_salary_for_superjob(
         programming_languages
     )
-    print_table(hh_table_line, title="hh.ru Moscow")
-    print_table(sj_table_line, title="SuperJob.ru Moscow")
+    hh_table = get_table(hh_table_line, title="hh.ru Moscow")
+    sj_table = get_table(sj_table_line, title="SuperJob.ru Moscow")
+    print(hh_table)
+    print(sj_table)
