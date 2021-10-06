@@ -7,12 +7,13 @@ from terminaltables import DoubleTable
 def predict_rub_salary_for_hh(programming_languages):
     hh_table_line = []
     for language in programming_languages:
-        hh_vacancies_table_rows = get_hh_vacancy_table_rows(language,hh_params)
+        hh_vacancies_table_rows = get_hh_vacancy_table_rows(language, hh_params)
         hh_table_line.append(hh_vacancies_table_rows)
-        
+
     return hh_table_line
 
-def get_hh_vacancy_table_rows(language,params):  
+
+def get_hh_vacancy_table_rows(language, params):
     params["text"] = language
     params["page"] = 0
     hh_vacancies_number_pages = 40
@@ -24,26 +25,39 @@ def get_hh_vacancy_table_rows(language,params):
         hh_vacancies_number_pages = hh_vacancies["pages"]
         for salary in hh_vacancies['items']:
             if salary['salary']:
-                average_salary = predict_salary(salary['salary']["to"], salary['salary']["from"])
+                average_salary = predict_salary(
+                    salary['salary']["to"],
+                    salary['salary']["from"]
+                )
                 average_salaries_scroll.append(average_salary)
         params["page"] += 1
     try:
         average_salaries = sum(average_salaries_scroll) / len(average_salaries_scroll)
     except ZeroDivisionError:
         average_salaries = 0
-    
-    return [language,hh_vacancies["found"],len(average_salaries_scroll),int(average_salaries)]
+
+    return [
+        language,
+        hh_vacancies["found"],
+        len(average_salaries_scroll),
+        int(average_salaries)
+        ]
+
 
 def predict_rub_salary_for_superjob(programming_languages):
-    sj_table_line = [] 
+    sj_table_line = []
     for language in programming_languages:
-        sj_vacancies_table_rows = get_sj_vacancies_table_rows(language,superjob_api_key,sj_params,sj_headers)
+        sj_vacancies_table_rows = get_sj_vacancies_table_rows(
+                language,
+                superjob_api_key,
+                sj_params,
+                sj_headers)
         sj_table_line.append(sj_vacancies_table_rows)
-        
+
     return sj_table_line
 
 
-def get_sj_vacancies_table_rows(language,token,params,headers):
+def get_sj_vacancies_table_rows(language, token, params, headers):
     params["keyword"] = language
     params["page"] = 0
     sj_more_pages = True
@@ -51,8 +65,9 @@ def get_sj_vacancies_table_rows(language,token,params,headers):
 
     while sj_more_pages:
         response = requests.get(
-        "https://api.superjob.ru/2.0/vacancies/", headers=headers, params=params
-        )
+            "https://api.superjob.ru/2.0/vacancies/",
+            headers=headers,
+            params=params)
         response.raise_for_status()
         sj_vacancies = response.json()
         sj_more_pages = sj_vacancies["more"]
@@ -70,8 +85,12 @@ def get_sj_vacancies_table_rows(language,token,params,headers):
         average_salaries = sum(average_salaries_scroll) / len(average_salaries_scroll)
     except ZeroDivisionError:
         average_salaries = 0
-    
-    return [language,sj_vacancies["total"],len(average_salaries_scroll),int(average_salaries)]
+
+    return [language,
+            sj_vacancies["total"],
+            len(average_salaries_scroll),
+            int(average_salaries)]
+
 
 def predict_salary(salary_from, salary_to):
     if salary_from and not salary_to:
@@ -96,7 +115,6 @@ def get_table(table_data, title):
     return table_instance.table
 
 
-
 if __name__ == "__main__":
     load_dotenv()
     superjob_api_key = os.getenv("SUPERJOB_API_KEY")
@@ -114,11 +132,11 @@ if __name__ == "__main__":
         "Go",
     ]
     hh_params = {
-    "area": hh_id_moscow,
-    "period": 30,
-    "per_page": 50, 
-    "currency": "RUR"
-    }      
+        "area": hh_id_moscow,
+        "period": 30,
+        "per_page": 50,
+        "currency": "RUR"
+    }
     sj_headers = {"X-Api-App-Id": superjob_api_key}
     sj_params = {
         "t": sj_id_moscow,
