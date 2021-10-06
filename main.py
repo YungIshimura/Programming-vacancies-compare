@@ -22,7 +22,7 @@ def get_hh_vacancy_table_rows(language):
     params["text"] = language
     params["page"] = 0
     hh_vacancies_number_pages = 40
-    average_salary_scroll = []
+    average_salaries_scroll = []
     while params["page"] < hh_vacancies_number_pages:
         response = requests.get("https://api.hh.ru/vacancies", params=params)
         response.raise_for_status()
@@ -31,14 +31,14 @@ def get_hh_vacancy_table_rows(language):
         for salary in hh_vacancies['items']:
             if salary['salary']:
                 average_salary = predict_salary(salary['salary']["to"], salary['salary']["from"])
-                average_salary_scroll.append(average_salary)
+                average_salaries_scroll.append(average_salary)
         params["page"] += 1
     try:
-        average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
+        average_salaries = sum(average_salaries_scroll) / len(average_salaries_scroll)
     except ZeroDivisionError:
         average_salaries = 0
     
-    return [language,hh_vacancies["found"],len(average_salary_scroll),int(average_salaries)]
+    return [language,hh_vacancies["found"],len(average_salaries_scroll),int(average_salaries)]
 
 def predict_rub_salary_for_superjob(programming_languages):
     sj_table_line = [] 
@@ -61,7 +61,7 @@ def get_sj_vacancies_table_rows(language,token):
     params["keyword"] = language
     params["page"] = 0
     sj_more_pages = True
-    average_salary_scroll = []
+    average_salaries_scroll = []
 
     while sj_more_pages:
         response = requests.get(
@@ -75,17 +75,17 @@ def get_sj_vacancies_table_rows(language,token):
             average_salary = predict_salary(
                 salary["payment_from"], salary["payment_to"]
             )
-            average_salary_scroll.append(average_salary)
+            average_salaries_scroll.append(average_salary)
         params["page"] += 1
 
-    filtered_average_salary_scroll = filter(bool, average_salary_scroll)
-    average_salary_scroll = list(filtered_average_salary_scroll)
+    filtered_average_salaries_scroll = filter(bool, average_salaries_scroll)
+    average_salaries_scroll = list(filtered_average_salaries_scroll)
     try:
-        average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
+        average_salaries = sum(average_salaries_scroll) / len(average_salaries_scroll)
     except ZeroDivisionError:
         average_salaries = 0
     
-    return [language,sj_vacancies["total"],len(average_salary_scroll),int(average_salaries)]
+    return [language,sj_vacancies["total"],len(average_salaries_scroll),int(average_salaries)]
 
 def predict_salary(salary_from, salary_to):
     if salary_from and not salary_to:
