@@ -5,48 +5,51 @@ from terminaltables import DoubleTable
 
 
 def predict_rub_salary_for_hh(programming_languages):
+    hh_table_line = []
+    for language in programming_languages:
+        hh_vacancies_table_rows = get_hh_vacancy_table_rows(language)
+        hh_table_line.append(hh_vacancies_table_rows)
+        
+    return hh_table_line
+
+def get_hh_vacancy_table_rows(language):
     params = {
     "area": hh_id_moscow,
     "period": 30,
     "per_page": 50, 
     "currency": "RUR"
     }      
-    table_data = []
+    params["text"] = language
+    params["page"] = 0
+    hh_vacancies_number_pages = 40
+    average_salary_scroll = []
+    while params["page"] < hh_vacancies_number_pages:
+        response = requests.get("https://api.hh.ru/vacancies", params=params)
+        response.raise_for_status()
+        hh_vacancies = response.json()
+        hh_vacancies_number_pages = hh_vacancies["pages"]
+        for salary in hh_vacancies['items']:
+            if salary['salary']:
+                average_salary = predict_salary(salary['salary']["to"], salary['salary']["from"])
+                average_salary_scroll.append(average_salary)
+        params["page"] += 1
+    try:
+        average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
+    except ZeroDivisionError:
+        average_salaries = 0
+    
+    return [language,hh_vacancies["found"],len(average_salary_scroll),int(average_salaries)]
 
+def predict_rub_salary_for_superjob(programming_languages):
+    sj_table_line = [] 
     for language in programming_languages:
-        params["text"] = language
-        params["page"] = 0
-        hh_vacancies_number_pages = 40
-        average_salary_scroll = []
-
-        while params["page"] < hh_vacancies_number_pages:
-            response = requests.get("https://api.hh.ru/vacancies", params=params)
-            response.raise_for_status()
-            hh_vacancies = response.json()
-            hh_vacancies_number_pages = hh_vacancies["pages"]
-
-            for vacancies,salary in enumerate(hh_vacancies["items"]):
-                if salary['salary']:
-                    average_salary = predict_salary(salary['salary']["to"], salary['salary']["from"])
-                    average_salary_scroll.append(average_salary)
-            params["page"] += 1
-        try:
-            average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
-            table_data.append(
-                [
-                    language,
-                    hh_vacancies["found"],
-                    len(average_salary_scroll),
-                    int(average_salaries),
-                ]
-            )
-        except ZeroDivisionError:
-            continue
-
-    return table_data
+        sj_vacancies_table_rows = get_sj_vacancies_table_rows(language,superjob_api_key)
+        sj_table_line.append(sj_vacancies_table_rows)
+        
+    return sj_table_line
 
 
-def predict_rub_salary_for_superjob(programming_languages, superjob_api_key):
+def get_sj_vacancies_table_rows(language,token):
     headers = {"X-Api-App-Id": superjob_api_key}
     params = {
         "t": sj_id_moscow,
@@ -55,46 +58,34 @@ def predict_rub_salary_for_superjob(programming_languages, superjob_api_key):
         "page": 0,
         "count": 5,
     }
-    table_data = [] 
+    params["keyword"] = language
+    params["page"] = 0
+    sj_more_pages = True
+    average_salary_scroll = []
 
-    for language in programming_languages:
-        params["keyword"] = language
-        params["page"] = 0
-        sj_more_pages = True
-        average_salary_scroll = []
+    while sj_more_pages:
+        response = requests.get(
+        "https://api.superjob.ru/2.0/vacancies/", headers=headers, params=params
+        )
+        response.raise_for_status()
+        sj_vacancies = response.json()
+        sj_more_pages = sj_vacancies["more"]
 
-        while sj_more_pages:
-            response = requests.get(
-                "https://api.superjob.ru/2.0/vacancies/", headers=headers, params=params
+        for salary in sj_vacancies["objects"]:
+            average_salary = predict_salary(
+                salary["payment_from"], salary["payment_to"]
             )
-            response.raise_for_status()
-            sj_vacancies = response.json()
-            sj_more_pages = sj_vacancies["more"]
+            average_salary_scroll.append(average_salary)
+        params["page"] += 1
 
-            for vacancies,salary in enumerate(sj_vacancies["objects"]):
-                average_salary = predict_salary(
-                    salary["payment_from"], salary["payment_to"]
-                )
-                average_salary_scroll.append(average_salary)
-            params["page"] += 1
-
-        filtered_average_salary_scroll = filter(bool, average_salary_scroll)
-        average_salary_scroll = list(filtered_average_salary_scroll)
-
-        try:
-            average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
-            table_data.append(
-                [
-                    language,
-                    sj_vacancies["total"],
-                    len(average_salary_scroll),
-                    int(average_salaries),
-                ]
-            )
-        except ZeroDivisionError:
-            continue
-    return table_data
-
+    filtered_average_salary_scroll = filter(bool, average_salary_scroll)
+    average_salary_scroll = list(filtered_average_salary_scroll)
+    try:
+        average_salaries = sum(average_salary_scroll) / len(average_salary_scroll)
+    except ZeroDivisionError:
+        average_salaries = 0
+    
+    return [language,sj_vacancies["total"],len(average_salary_scroll),int(average_salaries)]
 
 def predict_salary(salary_from, salary_to):
     if salary_from and not salary_to:
@@ -134,11 +125,11 @@ if __name__ == "__main__":
         "PHP",
         "Go",
     ]
-    hh_table_data = predict_rub_salary_for_hh(
+    hh_table_line = predict_rub_salary_for_hh(
         programming_languages
     )
-    sj_table_data = predict_rub_salary_for_superjob(
-        programming_languages, superjob_api_key
+    sj_table_line = predict_rub_salary_for_superjob(
+        programming_languages
     )
-    print_table(hh_table_data, title="hh.ru Moscow")
-    print_table(sj_table_data, title="SuperJob.ru Moscow")
+    print_table(hh_table_line, title="hh.ru Moscow")
+    print_table(sj_table_line, title="SuperJob.ru Moscow")
