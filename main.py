@@ -7,8 +7,9 @@ from terminaltables import DoubleTable
 def predict_rub_salary_for_hh(programming_languages):
     hh_table_line = []
     for language in programming_languages:
-        hh_vacancies_table_rows = get_hh_vacancy_table_rows(language, hh_params)
-        hh_table_line.append(hh_vacancies_table_rows)
+        hh_vacancies_table_rows = get_hh_vacancy_table_rows(
+            language, hh_params)
+        hh_table_line.append([language, *hh_vacancies_table_rows])
 
     return hh_table_line
 
@@ -36,12 +37,7 @@ def get_hh_vacancy_table_rows(language, params):
     except ZeroDivisionError:
         average_salaries = 0
 
-    return [
-        language,
-        hh_vacancies["found"],
-        len(average_salaries_scroll),
-        int(average_salaries)
-        ]
+    return hh_vacancies["found"], len(average_salaries_scroll), int(average_salaries)
 
 
 def predict_rub_salary_for_superjob(programming_languages):
@@ -52,7 +48,7 @@ def predict_rub_salary_for_superjob(programming_languages):
                 superjob_api_key,
                 sj_params,
                 sj_headers)
-        sj_table_line.append(sj_vacancies_table_rows)
+        sj_table_line.append([language, *sj_vacancies_table_rows])
 
     return sj_table_line
 
@@ -86,10 +82,7 @@ def get_sj_vacancies_table_rows(language, token, params, headers):
     except ZeroDivisionError:
         average_salaries = 0
 
-    return [language,
-            sj_vacancies["total"],
-            len(average_salaries_scroll),
-            int(average_salaries)]
+    return sj_vacancies["total"], len(average_salaries_scroll), int(average_salaries)
 
 
 def predict_salary(salary_from, salary_to):
