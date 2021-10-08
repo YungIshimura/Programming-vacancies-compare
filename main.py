@@ -8,13 +8,19 @@ def predict_rub_salary_for_hh(programming_languages):
     hh_table_line = []
     for language in programming_languages:
         hh_vacancies_table_rows = get_hh_vacancy_table_rows(
-            language, hh_params)
+            language)
         hh_table_line.append([language, *hh_vacancies_table_rows])
 
     return hh_table_line
 
 
-def get_hh_vacancy_table_rows(language, params):
+def get_hh_vacancy_table_rows(language):
+    params = {
+        "area": hh_id_moscow,
+        "period": 30,
+        "per_page": 50,
+        "currency": "RUR"
+    }
     params["text"] = language
     params["page"] = 0
     hh_vacancies_number_pages = 40
@@ -43,17 +49,21 @@ def get_hh_vacancy_table_rows(language, params):
 def predict_rub_salary_for_superjob(programming_languages):
     sj_table_line = []
     for language in programming_languages:
-        sj_vacancies_table_rows = get_sj_vacancies_table_rows(
-                language,
-                superjob_api_key,
-                sj_params,
-                sj_headers)
+        sj_vacancies_table_rows = get_sj_vacancies_table_rows(language,superjob_api_key,)
         sj_table_line.append([language, *sj_vacancies_table_rows])
 
     return sj_table_line
 
 
-def get_sj_vacancies_table_rows(language, token, params, headers):
+def get_sj_vacancies_table_rows(language, token):
+    headers = {"X-Api-App-Id": superjob_api_key}
+    params = {
+        "t": sj_id_moscow,
+        "catalogues": sj_profession_catalog_number,
+        "period": 30,
+        "page": 0,
+        "count": 5,
+    }
     params["keyword"] = language
     params["page"] = 0
     sj_more_pages = True
@@ -122,20 +132,6 @@ if __name__ == "__main__":
         "PHP",
         "Go",
     ]
-    hh_params = {
-        "area": hh_id_moscow,
-        "period": 30,
-        "per_page": 50,
-        "currency": "RUR"
-    }
-    sj_headers = {"X-Api-App-Id": superjob_api_key}
-    sj_params = {
-        "t": sj_id_moscow,
-        "catalogues": sj_profession_catalog_number,
-        "period": 30,
-        "page": 0,
-        "count": 5,
-    }
     hh_table_line = predict_rub_salary_for_hh(
         programming_languages
     )
