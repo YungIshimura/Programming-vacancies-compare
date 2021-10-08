@@ -16,7 +16,7 @@ def predict_rub_salary_for_hh(programming_languages):
 
 def get_hh_vacancy_table_rows(language):
     params = {
-        "area": hh_id_moscow,
+        "area": hh_moscow_id,
         "period": 30,
         "per_page": 50,
         "currency": "RUR"
@@ -59,7 +59,7 @@ def predict_rub_salary_for_superjob(programming_languages):
 def get_sj_vacancies_table_rows(language, token):
     headers = {"X-Api-App-Id": superjob_api_key}
     params = {
-        "t": sj_id_moscow,
+        "t": sj_moscow_id,
         "catalogues": sj_profession_catalog_number,
         "period": 30,
         "page": 0,
@@ -120,8 +120,8 @@ def get_table(table_data, title):
 if __name__ == "__main__":
     load_dotenv()
     superjob_api_key = os.getenv("SUPERJOB_API_KEY")
-    hh_id_moscow = "1"
-    sj_id_moscow = "4"
+    hh_moscow_id = "1"
+    sj_moscow_id = "4"
     sj_profession_catalog_number = "48"
     programming_languages = [
         "Python",
