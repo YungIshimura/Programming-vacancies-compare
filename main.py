@@ -5,16 +5,17 @@ from terminaltables import DoubleTable
 
 
 def predict_rub_salary_for_hh(programming_languages):
-    hh_table_line = []
+    hh_table_lines = []
     for language in programming_languages:
-        hh_vacancies_table_rows = get_hh_vacancy_table_rows(
+        hh_vacancies_table_rows = get_hh_vacancy_table_row(
             language)
-        hh_table_line.append([language, *hh_vacancies_table_rows])
+        hh_table_lines.append([language, *hh_vacancies_table_rows])
+        print(hh_table_lines)
 
-    return hh_table_line
+    return hh_table_lines
 
 
-def get_hh_vacancy_table_rows(language):
+def get_hh_vacancy_table_row(language):
     params = {
         "area": hh_moscow_id,
         "period": 30,
@@ -32,31 +33,31 @@ def get_hh_vacancy_table_rows(language):
         hh_vacancies_number_pages = hh_vacancies["pages"]
         for salary in hh_vacancies['items']:
             if salary['salary']:
-                average_salary = predict_salary(
+                average_salaries = predict_salary(
                     salary['salary']["to"],
                     salary['salary']["from"]
                 )
-                average_salaries_scroll.append(average_salary)
+                average_salaries_scroll.append(average_salaries)
         params["page"] += 1
     try:
-        average_salaries = sum(average_salaries_scroll) / len(average_salaries_scroll)
+        average_salary = sum(average_salaries_scroll) / len(average_salaries_scroll)
     except ZeroDivisionError:
-        average_salaries = 0
+        average_salary = 0
 
-    return hh_vacancies["found"], len(average_salaries_scroll), int(average_salaries)
+    return hh_vacancies["found"], len(average_salaries_scroll), int(average_salary)
 
 
 def predict_rub_salary_for_superjob(programming_languages):
-    sj_table_line = []
+    sj_table_lines = []
     for language in programming_languages:
-        sj_vacancies_table_rows = get_sj_vacancies_table_rows(
+        sj_vacancies_table_rows = get_sj_vacancies_table_row(
             language, superjob_api_key,)
-        sj_table_line.append([language, *sj_vacancies_table_rows])
+        sj_table_lines.append([language, *sj_vacancies_table_rows])
+        print(sj_table_lines)
+    return sj_table_lines
 
-    return sj_table_line
 
-
-def get_sj_vacancies_table_rows(language, token):
+def get_sj_vacancies_table_row(language, token):
     headers = {"X-Api-App-Id": superjob_api_key}
     params = {
         "t": sj_moscow_id,
@@ -80,20 +81,20 @@ def get_sj_vacancies_table_rows(language, token):
         sj_more_pages = sj_vacancies["more"]
 
         for salary in sj_vacancies["objects"]:
-            average_salary = predict_salary(
+            average_salaries = predict_salary(
                 salary["payment_from"], salary["payment_to"]
             )
-            average_salaries_scroll.append(average_salary)
+            average_salaries_scroll.append(average_salaries)
         params["page"] += 1
 
     filtered_average_salaries_scroll = filter(bool, average_salaries_scroll)
     average_salaries_scroll = list(filtered_average_salaries_scroll)
     try:
-        average_salaries = sum(average_salaries_scroll) / len(average_salaries_scroll)
+        average_salary = sum(average_salaries_scroll) / len(average_salaries_scroll)
     except ZeroDivisionError:
-        average_salaries = 0
+        average_salary = 0
 
-    return sj_vacancies["total"], len(average_salaries_scroll), int(average_salaries)
+    return sj_vacancies["total"], len(average_salaries_scroll), int(average_salary)
 
 
 def predict_salary(salary_from, salary_to):
@@ -133,13 +134,13 @@ if __name__ == "__main__":
         "PHP",
         "Go",
     ]
-    hh_table_line = predict_rub_salary_for_hh(
+    hh_table_lines = predict_rub_salary_for_hh(
         programming_languages
     )
-    sj_table_line = predict_rub_salary_for_superjob(
+    sj_table_lines = predict_rub_salary_for_superjob(
         programming_languages
     )
-    hh_table = get_table(hh_table_line, title="hh.ru Moscow")
-    sj_table = get_table(sj_table_line, title="SuperJob.ru Moscow")
+    hh_table = get_table(hh_table_lines, title="hh.ru Moscow")
+    sj_table = get_table(sj_table_lines, title="SuperJob.ru Moscow")
     print(hh_table)
     print(sj_table)
