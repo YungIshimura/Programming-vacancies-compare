@@ -49,7 +49,8 @@ def get_hh_vacancy_table_rows(language):
 def predict_rub_salary_for_superjob(programming_languages):
     sj_table_line = []
     for language in programming_languages:
-        sj_vacancies_table_rows = get_sj_vacancies_table_rows(language,superjob_api_key,)
+        sj_vacancies_table_rows = get_sj_vacancies_table_rows(
+            language, superjob_api_key,)
         sj_table_line.append([language, *sj_vacancies_table_rows])
 
     return sj_table_line
