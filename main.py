@@ -99,8 +99,6 @@ def predict_salary(salary_from, salary_to):
         return salary_to * 0.8
     elif salary_from and salary_to:
         return (salary_to + salary_from) / 2
-    else:
-        pass
 
 
 def get_table(table_data, title):
