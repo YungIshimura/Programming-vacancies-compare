@@ -10,15 +10,15 @@ def predict_rub_salary_for_hh(programming_languages):
     hh_table_lines = []
     for language in programming_languages:
         hh_vacancies_table_rows = get_hh_vacancy_table_row(
-            language)
+            language,hh_moscow_id)
         hh_table_lines.append([language, *hh_vacancies_table_rows])
 
     return hh_table_lines
 
 
-def get_hh_vacancy_table_row(language):
+def get_hh_vacancy_table_row(language,city_id):
     params = {
-        "area": hh_moscow_id,
+        "area": city_id,
         "period": 30,
         "per_page": 50,
         "currency": "RUR"
@@ -52,20 +52,21 @@ def predict_rub_salary_for_superjob(programming_languages):
     sj_table_lines = []
     for language in programming_languages:
         sj_vacancies_table_rows = get_sj_vacancies_table_row(
-            language, superjob_api_key,)
+            language, superjob_api_key,sj_moscow_id,sj_profession_catalog_number)
         sj_table_lines.append([language, *sj_vacancies_table_rows])
 
     return sj_table_lines
 
 
-def get_sj_vacancies_table_row(language, token):
-    headers = {"X-Api-App-Id": superjob_api_key}
+def get_sj_vacancies_table_row(language, token, city_id,proffesion_id):
+    headers = {"X-Api-App-Id": token}
     params = {
-        "t": sj_moscow_id,
-        "catalogues": sj_profession_catalog_number,
+        "t": city_id,
+        "catalogues": proffesion_id,
         "period": 30,
         "page": 0,
         "count": 5,
+        "currency": "RUR"
     }
     params["keyword"] = language
     params["page"] = 0
@@ -135,13 +136,13 @@ if __name__ == "__main__":
         "PHP",
         "Go",
     ]
-    hh_table_lines = predict_rub_salary_for_hh(
-        programming_languages
-    )
+    # hh_table_lines = predict_rub_salary_for_hh(
+    #     programming_languages
+    # )
     sj_table_lines = predict_rub_salary_for_superjob(
         programming_languages
     )
-    hh_table = get_table(hh_table_lines, title="hh.ru Moscow")
+    # hh_table = get_table(hh_table_lines, title="hh.ru Moscow")
     sj_table = get_table(sj_table_lines, title="SuperJob.ru Moscow")
-    print(hh_table)
+    # print(hh_table)
     print(sj_table)
