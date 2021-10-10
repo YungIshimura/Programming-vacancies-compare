@@ -9,14 +9,14 @@ from terminaltables import DoubleTable
 def predict_rub_salary_for_hh(programming_languages):
     hh_table_lines = []
     for language in programming_languages:
-        hh_vacancies_table_rows = get_hh_vacancy_table_row(
+        hh_vacancies_table_rows = get_hh_vacancy_statistics(
             language, hh_moscow_id)
         hh_table_lines.append([language, *hh_vacancies_table_rows])
 
     return hh_table_lines
 
 
-def get_hh_vacancy_table_row(language, city_id):
+def get_hh_vacancy_statistics(language, city_id):
     params = {
         "area": city_id,
         "period": 30,
@@ -53,7 +53,7 @@ def get_hh_vacancy_table_row(language, city_id):
 def predict_rub_salary_for_superjob(programming_languages):
     sj_table_lines = []
     for language in programming_languages:
-        sj_vacancies_table_rows = get_sj_vacancies_table_row(
+        sj_vacancies_table_rows = get_sj_vacancies_table_statistics(
             language,
             superjob_api_key,
             sj_moscow_id,
@@ -63,7 +63,7 @@ def predict_rub_salary_for_superjob(programming_languages):
     return sj_table_lines
 
 
-def get_sj_vacancies_table_row(language, token, city_id, proffesion_id):
+def get_sj_vacancies_table_statistics(language, token, city_id, proffesion_id):
     headers = {"X-Api-App-Id": token}
     params = {
         "t": city_id,
@@ -116,7 +116,10 @@ def predict_salary(salary_from, salary_to):
 
 def get_table(table_data, title):
     table_rows = [
-        ["language", "vacancies_found", "vacancies_processed", "average_salary"]
+        ["language",
+            "vacancies_found",
+            "vacancies_processed",
+            "average_salary"]
     ]
     for vacancies in table_data:
         table_rows.append(vacancies)
@@ -142,13 +145,13 @@ if __name__ == "__main__":
         "PHP",
         "Go",
     ]
-    hh_table_lines = predict_rub_salary_for_hh(
+    hh_table_statistics = predict_rub_salary_for_hh(
         programming_languages
     )
-    sj_table_lines = predict_rub_salary_for_superjob(
+    sj_table_statistics = predict_rub_salary_for_superjob(
         programming_languages
     )
-    hh_table = get_table(hh_table_lines, title="hh.ru Moscow")
-    sj_table = get_table(sj_table_lines, title="SuperJob.ru Moscow")
+    hh_table = get_table(hh_table_statistics, title="hh.ru Moscow")
+    sj_table = get_table(sj_table_statistics, title="SuperJob.ru Moscow")
     print(hh_table)
     print(sj_table)
