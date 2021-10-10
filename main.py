@@ -7,13 +7,13 @@ from terminaltables import DoubleTable
 
 
 def predict_rub_salary_for_hh(programming_languages):
-    hh_table_lines = []
+    table_lines = []
     for language in programming_languages:
-        hh_vacancies_table_rows = get_hh_vacancy_statistics(
+        vacancies_table_rows = get_hh_vacancy_statistics(
             language, hh_moscow_id)
-        hh_table_lines.append([language, *hh_vacancies_table_rows])
+        table_lines.append([language, *vacancies_table_rows])
 
-    return hh_table_lines
+    return table_lines
 
 
 def get_hh_vacancy_statistics(language, city_id):
@@ -26,15 +26,15 @@ def get_hh_vacancy_statistics(language, city_id):
         "page": 0
     }
 
-    hh_vacancies_number_pages = 40
+    vacancies_number_pages = 40
     average_salaries = []
 
-    while params["page"] < hh_vacancies_number_pages:
+    while params["page"] < vacancies_number_pages:
         response = requests.get("https://api.hh.ru/vacancies", params=params)
         response.raise_for_status()
-        hh_vacancies = response.json()
-        hh_vacancies_number_pages = hh_vacancies["pages"]
-        for salary in hh_vacancies["items"]:
+        vacancies = response.json()
+        vacancies_number_pages = vacancies["pages"]
+        for salary in vacancies["items"]:
             if salary["salary"]:
                 average_salary = predict_salary(
                     salary["salary"]["to"],
@@ -47,20 +47,20 @@ def get_hh_vacancy_statistics(language, city_id):
     except ZeroDivisionError:
         average_salary = 0
 
-    return hh_vacancies["found"], len(average_salaries), int(average_salary)
+    return vacancies["found"], len(average_salaries), int(average_salary)
 
 
 def predict_rub_salary_for_superjob(programming_languages):
-    sj_table_lines = []
+    table_lines = []
     for language in programming_languages:
         sj_vacancies_table_rows = get_sj_vacancies_table_statistics(
             language,
             superjob_api_key,
             sj_moscow_id,
             sj_profession_catalog_number)
-        sj_table_lines.append([language, *sj_vacancies_table_rows])
+        table_lines.append([language, *sj_vacancies_table_rows])
 
-    return sj_table_lines
+    return table_lines
 
 
 def get_sj_vacancies_table_statistics(language, token, city_id, proffesion_id):
@@ -75,19 +75,19 @@ def get_sj_vacancies_table_statistics(language, token, city_id, proffesion_id):
         "page": 0
     }
 
-    sj_more_pages = True
+    more_pages = True
     average_salaries = []
 
-    while sj_more_pages:
+    while more_pages:
         response = requests.get(
             "https://api.superjob.ru/2.0/vacancies/",
             headers=headers,
             params=params)
         response.raise_for_status()
-        sj_vacancies = response.json()
-        sj_more_pages = sj_vacancies["more"]
+        vacancies = response.json()
+        more_pages = vacancies["more"]
 
-        for salary in sj_vacancies["objects"]:
+        for salary in vacancies["objects"]:
             if salary["currency"] == "rub":
                 average_salary = predict_salary(
                     salary["payment_from"], salary["payment_to"]
@@ -102,7 +102,7 @@ def get_sj_vacancies_table_statistics(language, token, city_id, proffesion_id):
     except ZeroDivisionError:
         average_salary = 0
 
-    return sj_vacancies["total"], len(average_salaries), int(average_salary)
+    return vacancies["total"], len(average_salaries), int(average_salary)
 
 
 def predict_salary(salary_from, salary_to):
