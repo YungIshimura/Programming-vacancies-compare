@@ -66,7 +66,7 @@ def get_sj_vacancies_table_row(language, token, city_id,proffesion_id):
         "period": 30,
         "page": 0,
         "count": 5,
-        "currency": "RUR"
+
     }
     params["keyword"] = language
     params["page"] = 0
@@ -83,10 +83,11 @@ def get_sj_vacancies_table_row(language, token, city_id,proffesion_id):
         sj_more_pages = sj_vacancies["more"]
 
         for salary in sj_vacancies["objects"]:
-            average_salary = predict_salary(
-                salary["payment_from"], salary["payment_to"]
-            )
-            average_salaries.append(average_salary)
+            if salary["currency"]=="rub":
+                average_salary = predict_salary(
+                    salary["payment_from"], salary["payment_to"]
+                )
+                average_salaries.append(average_salary)
         params["page"] += 1
 
     filtered_average_salaries_scroll = filter(bool, average_salaries)
