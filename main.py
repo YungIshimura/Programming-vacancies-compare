@@ -10,23 +10,25 @@ def predict_rub_salary_for_hh(programming_languages):
     hh_table_lines = []
     for language in programming_languages:
         hh_vacancies_table_rows = get_hh_vacancy_table_row(
-            language,hh_moscow_id)
+            language, hh_moscow_id)
         hh_table_lines.append([language, *hh_vacancies_table_rows])
 
     return hh_table_lines
 
 
-def get_hh_vacancy_table_row(language,city_id):
+def get_hh_vacancy_table_row(language, city_id):
     params = {
         "area": city_id,
         "period": 30,
         "per_page": 50,
-        "currency": "RUR"
+        "currency": "RUR",
+        "text": language,
+        "page": 0
     }
-    params["text"] = language
-    params["page"] = 0
+
     hh_vacancies_number_pages = 40
     average_salaries = []
+
     while params["page"] < hh_vacancies_number_pages:
         response = requests.get("https://api.hh.ru/vacancies", params=params)
         response.raise_for_status()
@@ -52,13 +54,16 @@ def predict_rub_salary_for_superjob(programming_languages):
     sj_table_lines = []
     for language in programming_languages:
         sj_vacancies_table_rows = get_sj_vacancies_table_row(
-            language, superjob_api_key,sj_moscow_id,sj_profession_catalog_number)
+            language,
+            superjob_api_key,
+            sj_moscow_id,
+            sj_profession_catalog_number)
         sj_table_lines.append([language, *sj_vacancies_table_rows])
 
     return sj_table_lines
 
 
-def get_sj_vacancies_table_row(language, token, city_id,proffesion_id):
+def get_sj_vacancies_table_row(language, token, city_id, proffesion_id):
     headers = {"X-Api-App-Id": token}
     params = {
         "t": city_id,
@@ -66,10 +71,10 @@ def get_sj_vacancies_table_row(language, token, city_id,proffesion_id):
         "period": 30,
         "page": 0,
         "count": 5,
-
+        "keyword": language,
+        "page": 0
     }
-    params["keyword"] = language
-    params["page"] = 0
+
     sj_more_pages = True
     average_salaries = []
 
@@ -83,7 +88,7 @@ def get_sj_vacancies_table_row(language, token, city_id,proffesion_id):
         sj_more_pages = sj_vacancies["more"]
 
         for salary in sj_vacancies["objects"]:
-            if salary["currency"]=="rub":
+            if salary["currency"] == "rub":
                 average_salary = predict_salary(
                     salary["payment_from"], salary["payment_to"]
                 )
@@ -137,13 +142,13 @@ if __name__ == "__main__":
         "PHP",
         "Go",
     ]
-    # hh_table_lines = predict_rub_salary_for_hh(
-    #     programming_languages
-    # )
+    hh_table_lines = predict_rub_salary_for_hh(
+        programming_languages
+    )
     sj_table_lines = predict_rub_salary_for_superjob(
         programming_languages
     )
-    # hh_table = get_table(hh_table_lines, title="hh.ru Moscow")
+    hh_table = get_table(hh_table_lines, title="hh.ru Moscow")
     sj_table = get_table(sj_table_lines, title="SuperJob.ru Moscow")
-    # print(hh_table)
+    print(hh_table)
     print(sj_table)
