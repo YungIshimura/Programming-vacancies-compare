@@ -6,11 +6,11 @@ from dotenv import load_dotenv
 from terminaltables import DoubleTable
 
 
-def predict_rub_salary_for_hh(programming_languages):
+def predict_rub_salary_for_hh(programming_languages, city_id):
     table_lines = []
     for language in programming_languages:
         vacancies_table_rows = get_hh_vacancy_statistics(
-            language, hh_moscow_id)
+            language, city_id)
         table_lines.append([language, *vacancies_table_rows])
 
     return table_lines
@@ -50,14 +50,14 @@ def get_hh_vacancy_statistics(language, city_id):
     return vacancies["found"], len(average_salaries), int(average_salary)
 
 
-def predict_rub_salary_for_superjob(programming_languages):
+def predict_rub_salary_for_superjob(programming_languages, token, city_id, profession_catalog_number):
     table_lines = []
     for language in programming_languages:
         sj_vacancies_table_rows = get_sj_vacancies_table_statistics(
             language,
-            superjob_api_key,
-            sj_moscow_id,
-            sj_profession_catalog_number)
+            token,
+            city_id,
+            profession_catalog_number)
         table_lines.append([language, *sj_vacancies_table_rows])
 
     return table_lines
@@ -146,10 +146,10 @@ if __name__ == "__main__":
         "Go",
     ]
     hh_table_statistics = predict_rub_salary_for_hh(
-        programming_languages
+        programming_languages, hh_moscow_id
     )
     sj_table_statistics = predict_rub_salary_for_superjob(
-        programming_languages
+        programming_languages,superjob_api_key, sj_moscow_id, sj_profession_catalog_number
     )
     hh_table = get_table(hh_table_statistics, title="hh.ru Moscow")
     sj_table = get_table(sj_table_statistics, title="SuperJob.ru Moscow")
