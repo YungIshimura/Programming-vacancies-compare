@@ -50,7 +50,11 @@ def get_hh_vacancy_statistics(language, city_id):
     return vacancies["found"], len(average_salaries), int(average_salary)
 
 
-def predict_rub_salary_for_superjob(programming_languages, token, city_id, profession_catalog_number):
+def predict_rub_salary_for_superjob(
+        programming_languages,
+        token,
+        city_id,
+        profession_catalog_number):
     table_lines = []
     for language in programming_languages:
         sj_vacancies_table_rows = get_sj_vacancies_table_statistics(
@@ -117,9 +121,9 @@ def predict_salary(salary_from, salary_to):
 def get_table(table_data, title):
     table_rows = [
         ["language",
-            "vacancies_found",
-            "vacancies_processed",
-            "average_salary"]
+         "vacancies_found",
+         "vacancies_processed",
+         "average_salary"]
     ]
     for vacancies in table_data:
         table_rows.append(vacancies)
@@ -149,7 +153,10 @@ if __name__ == "__main__":
         programming_languages, hh_moscow_id
     )
     sj_table_statistics = predict_rub_salary_for_superjob(
-        programming_languages,superjob_api_key, sj_moscow_id, sj_profession_catalog_number
+        programming_languages,
+        superjob_api_key,
+        sj_moscow_id,
+        sj_profession_catalog_number
     )
     hh_table = get_table(hh_table_statistics, title="hh.ru Moscow")
     sj_table = get_table(sj_table_statistics, title="SuperJob.ru Moscow")
