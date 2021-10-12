@@ -9,14 +9,14 @@ from terminaltables import DoubleTable
 def predict_rub_salary_for_hh(programming_languages, city_id):
     table_lines = []
     for language in programming_languages:
-        vacancies_table_rows = get_hh_vacancy_statistics(
+        vacancies_stats = get_hh_vacancy_stats(
             language, city_id)
-        table_lines.append([language, *vacancies_table_rows])
+        table_lines.append([language, *vacancies_stats])
 
     return table_lines
 
 
-def get_hh_vacancy_statistics(language, city_id):
+def get_hh_vacancy_stats(language, city_id):
     params = {
         "area": city_id,
         "period": 30,
@@ -57,17 +57,17 @@ def predict_rub_salary_for_superjob(
         profession_catalog_number):
     table_lines = []
     for language in programming_languages:
-        sj_vacancies_table_rows = get_sj_vacancies_table_statistics(
+        vacancies_stats = get_sj_vacancies_stats(
             language,
             token,
             city_id,
             profession_catalog_number)
-        table_lines.append([language, *sj_vacancies_table_rows])
+        table_lines.append([language, *vacancies_stats])
 
     return table_lines
 
 
-def get_sj_vacancies_table_statistics(language, token, city_id, proffesion_id):
+def get_sj_vacancies_stats(language, token, city_id, proffesion_id):
     headers = {"X-Api-App-Id": token}
     params = {
         "t": city_id,
@@ -149,16 +149,16 @@ if __name__ == "__main__":
         "PHP",
         "Go",
     ]
-    hh_table_statistics = predict_rub_salary_for_hh(
+    hh_table_stats = predict_rub_salary_for_hh(
         programming_languages, hh_moscow_id
     )
-    sj_table_statistics = predict_rub_salary_for_superjob(
+    sj_table_stats = predict_rub_salary_for_superjob(
         programming_languages,
         superjob_api_key,
         sj_moscow_id,
         sj_profession_catalog_number
     )
-    hh_table = get_table(hh_table_statistics, title="hh.ru Moscow")
-    sj_table = get_table(sj_table_statistics, title="SuperJob.ru Moscow")
+    hh_table = get_table(hh_table_stats, title="hh.ru Moscow")
+    sj_table = get_table(sj_table_stats, title="SuperJob.ru Moscow")
     print(hh_table)
     print(sj_table)
